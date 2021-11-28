@@ -122,5 +122,58 @@ namespace PhoneBookApp
             }
         }
 
+        private static void AddNewContact(IDictionary<Contact, List<Calls>> ContactList)
+        {
+            var check = false;
+            string phoneNumber, nameAndSurname;
+            var numberOfTries = 0;
+
+            Console.Clear();
+            Console.WriteLine("Upisite ime i prezime novog kontakta.");
+
+            do
+            {
+                nameAndSurname = Console.ReadLine();
+                check = CheckNameAndSurname(nameAndSurname);
+            } while (check is false);
+
+            Console.WriteLine("Upisite broj mobitela novog kontakta.");
+
+            do
+            {
+                phoneNumber = Console.ReadLine();
+
+                check = CheckPhoneNumber(phoneNumber, ContactList);
+                numberOfTries++;
+
+                if (numberOfTries is 4)
+                {
+                    Console.WriteLine("Vidim da se mucite sa upisom mobilnog broja, ako se zelite vratiti na glavni izbornik napisite 'da'.");
+                    var choice = Console.ReadLine();
+
+                    if (choice is "da" || choice is "DA")
+                        break;
+                    else
+                        numberOfTries = 0;
+                }
+
+            } while (check is false);
+
+            ContactList.Add(AddNewContact(nameAndSurname, phoneNumber), new List<Calls>());
+
+            Console.WriteLine("Kontakt uspjesno upisan!\n" +
+                "Ako zelite dodati jos neki kontakt napisite 'da', ako ne zelite stisnite bilo koji botun.");
+            var addContactChoice = Console.ReadLine();
+
+            if (addContactChoice is "DA" || addContactChoice is "da")
+                AddNewContact(ContactList);
+        }
+
+        static Contact AddNewContact(string nameAndSurname, string phoneNumber)
+        {
+            var newContact = new Contact();
+            newContact.AddContact(nameAndSurname, phoneNumber);
+            return newContact;
+        }
     }
 }
