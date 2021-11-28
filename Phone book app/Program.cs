@@ -225,13 +225,100 @@ namespace PhoneBookApp
                 Console.WriteLine("Nema vise mogucih kontakata za brisanje, vraceni ste na main menu.\n");
         }
 
+        private static void EditingContactPreference(IDictionary<Contact, List<Calls>> ContactList)
+        {
+            var chosenPhoneNumber = "";
+            bool isNumber, successfulPreferenceEdit = false;
+
+            Console.Clear();
+
+            WriteOutContacts(ContactList);
+            Console.WriteLine("\nIspisite broj osobe od ponudenih kojoj zelite promjenit preferencu:");
+
+            do
+            {
+                chosenPhoneNumber = Console.ReadLine();
+                isNumber = int.TryParse(chosenPhoneNumber, out _);
+
+                if (!isNumber)
+                    Console.WriteLine("Mobilni broj vam se mora samo sastojati od brojeva! Pokusajte ponovno.");
+                else
+                    break;
+            } while (true);
+
+            foreach (var item in ContactList)
+            {
+                if (item.Key.PhoneNumber == chosenPhoneNumber)
+                {
+                    Console.WriteLine("Odaberite jedno od ponudenih opcija:\n" +
+                                      "0 - Favorit\n" +
+                                      "1 - Normalan\n" +
+                                      "2 - Blokiran");
+
+                    var preferenceChoice = int.Parse(Console.ReadLine());
+                    var newPreference = (Enums.PreferenceType)preferenceChoice;
+
+                    if (item.Key.Preference == newPreference)
+                    {
+                        Console.WriteLine("Odabrana preferenca je vec na snazi u odabranom kontaktu!\n");
+                        return;
+                    }
+
+                    Console.WriteLine("Napisite 'da' ako ste sigurni da zelite promjeniti preference kontakta\n\n" + item.Key.ToString());
+                    var editChoice = Console.ReadLine();
+
+                    if (editChoice is "da" || editChoice is "DA")
+                    {
+                        ContactList.Add(ChangingPrefrence(item.Key.NameAndSurname, item.Key.PhoneNumber, preferenceChoice), item.Value);
+
+                        if (item.Value is not null)
+                            item.Value.Clear();
+
+                        ContactList.Remove(item.Key);
+
+                        successfulPreferenceEdit = true;
+                        break;
+                    }
+                    else
+                        return;
+                }
+            }
+
+            if (successfulPreferenceEdit is false)
+            {
+                Console.WriteLine("Odabran broj nije na listi kontakata!\n" +
+                                  "Ako zelite pokusat ponovno napisite 'da'.");
+                var repeatEdit = Console.ReadLine();
+
+                if (repeatEdit is "da" || repeatEdit is "DA")
+                    EditingContactPreference(ContactList);
+            }
+
+            if (successfulPreferenceEdit is true)
+            {
+                Console.WriteLine("Preferenca kontakta uspjesno promjenjena!\n" +
+                              "Ako zelite promjeniti preferencu jos nekog kontakta napisite 'da', ako ne zelite stisnite bilo koji botun.");
+                var editContactChoice = Console.ReadLine();
+
+                if (editContactChoice is "DA" || editContactChoice is "da")
+                    EditingContactPreference(ContactList);
+            }
+        }
+
         static Contact AddNewContact(string nameAndSurname, string phoneNumber)
         {
             var newContact = new Contact();
             newContact.AddContact(nameAndSurname, phoneNumber);
             return newContact;
         }
- 
+
+        public static Contact ChangingPrefrence(string nameAndSurname, string phoneNumber, int newPreference)
+        {
+            var editedContact = new Contact();
+            editedContact.EditContact(nameAndSurname, phoneNumber, newPreference);
+            return editedContact;
+        }
+
         private static bool CheckNameAndSurname(string nameAndSurname)
         {
             var check = true;
