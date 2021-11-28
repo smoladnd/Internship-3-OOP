@@ -352,6 +352,13 @@ namespace PhoneBookApp
             return editedContact;
         }
 
+        static Calls AddNewCall(DateTime callStart, CallStatus status, int duration)
+        {
+            var newCall = new Calls();
+            newCall.AddNewCallInDictionary(callStart, status, duration);
+            return newCall;
+        }
+
         private static bool CheckNameAndSurname(string nameAndSurname)
         {
             var check = true;
@@ -406,6 +413,87 @@ namespace PhoneBookApp
             }
 
             return check;
+        }
+
+        public static void MakeNewCall(IDictionary<Contact, List<Calls>> ContactList)
+        {
+            var chosenPhoneNumber = "";
+            bool isNumber, check, madeCall = false;
+
+            Console.Clear();
+
+            check = CheckForActiveCalls(ContactList);
+
+            if (check is false)
+            {
+                WriteOutContacts(ContactList);
+                Console.WriteLine("\nIspisite broj osobe od ponudenih koju zelite nazvati:");
+
+                do
+                {
+                    chosenPhoneNumber = Console.ReadLine();
+                    isNumber = int.TryParse(chosenPhoneNumber, out _);
+
+                    if (!isNumber)
+                        Console.WriteLine("Mobilni broj vam se mora samo sastojati od brojeva! Pokusajte ponovno.");
+                    else
+                        break;
+                } while (true);
+
+                foreach (var item in ContactList)
+                {
+                    if (item.Key.PhoneNumber == chosenPhoneNumber)
+                    {
+                        if (item.Key.Preference == PreferenceType.Blokiran)
+                        {
+                            Console.WriteLine("Odabrani broj je blokiran, vracam vas na pod menu!");
+                            return;
+                        }
+                        else
+                        {
+                            var callChoice = "";
+                            switch ((CallStatus)RandomCallConection)
+                            {
+                                case CallStatus.Propusten:
+                                    var call = AddNewCall(DateTime.Now, CallStatus.Propusten, 0);
+                                    ContactList[item.Key].Add(call);
+                                    madeCall = !madeCall;
+                                    Console.WriteLine("Poziv je propusten, zelite li natrag u podmenu?\n");
+                                    callChoice = Console.ReadLine();
+
+                                    if (callChoice is "da" || callChoice is "Da")
+                                        MakeNewCall(ContactList);
+                                    break;
+                                case CallStatus.Traje:
+                                    item.Value.Add(AddNewCall(DateTime.Now, CallStatus.Traje, RandomCallDuration));
+                                    madeCall = !madeCall;
+                                    Console.WriteLine("Poziv je u tijeku, zelite li natrag u podmenu?\n");
+                                    callChoice = Console.ReadLine();
+
+                                    if (callChoice is "da" || callChoice is "Da")
+                                        MakeNewCall(ContactList);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                }
+
+                if (madeCall is false)
+                {
+                    Console.WriteLine("Odabran broj nije na listi kontakata, ako zelite pokusat ponovno napisite 'da'.");
+                    var repeatChoice = Console.ReadLine();
+
+                    if (repeatChoice is "da" || repeatChoice is "Da")
+                        MakeNewCall(ContactList);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Trenutno ste u pozivu, sacekajte da zavrsi!\n");
+                PhoneBookSubmenu(ContactList);
+            }
         }
 
     }
