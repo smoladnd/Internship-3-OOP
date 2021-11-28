@@ -305,6 +305,39 @@ namespace PhoneBookApp
             }
         }
 
+        private static void PhoneBookSubmenu(IDictionary<Contact, List<Calls>> ContactList)
+        {
+            var repeat = false;
+
+            Console.WriteLine("Odaberite jednu od sljedecih akcija:\n" +
+                              "1 - Ispis svih poziva odabranog kontakta\n" +
+                              "2 - Kreirajte novi poziv\n" +
+                              "3 - Izlaz iz podmenua");
+
+            var choice = int.Parse(Console.ReadLine());
+
+            switch (choice)
+            {
+                case 1:
+                    WriteOutCallsOfContactSorted(ContactList);
+                    break;
+                case 2:
+                    MakeNewCall(ContactList);
+                    break;
+                case 3:
+                    Console.Clear();
+                    break;
+                default:
+                    Console.Clear();
+                    Console.WriteLine("Molim vas upisite jedan od ponudenih tri broja!\n");
+                    repeat = true;
+                    break;
+            }
+
+            if (repeat is true)
+                PhoneBookSubmenu(ContactList);
+        }
+
         static Contact AddNewContact(string nameAndSurname, string phoneNumber)
         {
             var newContact = new Contact();
