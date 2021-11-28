@@ -169,6 +169,62 @@ namespace PhoneBookApp
                 AddNewContact(ContactList);
         }
 
+        private static void EraseContact(IDictionary<Contact, List<Calls>> ContactList)
+        {
+            bool erasureConfirmed = true, isNumber;
+            var chosenPhoneNumber = "";
+
+            Console.Clear();
+
+            WriteOutContacts(ContactList);
+            Console.WriteLine("\nIspisite broj osobe od ponudenih koji zelite obrisati:");
+
+            do
+            {
+                chosenPhoneNumber = Console.ReadLine();
+                isNumber = int.TryParse(chosenPhoneNumber, out _);
+
+                if (!isNumber)
+                    Console.WriteLine("Mobilni broj vam se mora samo sastojati od brojeva! Pokusajte ponovno.");
+                else
+                    break;
+            } while (true);
+
+            foreach (var item in ContactList)
+            {
+                if (item.Key.PhoneNumber == chosenPhoneNumber)
+                {
+                    Console.WriteLine("Napisite 'da' ako ste sigurni da zelite izbrisati kontakt\n\n" + item.Key.ToString());
+                    var erasionChoice = Console.ReadLine();
+
+                    if (erasionChoice is "da" || erasionChoice is "DA")
+                    {
+                        if (item.Value is not null)
+                            item.Value.Clear();
+
+                        ContactList.Remove(item.Key);
+
+                        Console.WriteLine("Kontakt je uspjesno izbrisan!");
+                        erasureConfirmed = !erasureConfirmed;
+                    }
+                }
+            }
+
+            if (erasureConfirmed)
+                Console.WriteLine("\nNaveden broj nije u listi kontakata");
+
+            if (ContactList.Count > 0)
+            {
+                Console.WriteLine("\nAko zelite pokusat izbrisat neki drugi kontakt napisite 'da'.");
+                var erasureRepeatChoice = Console.ReadLine();
+
+                if (erasureRepeatChoice is "da" || erasureRepeatChoice is "DA")
+                    EraseContact(ContactList);
+            }
+            else
+                Console.WriteLine("Nema vise mogucih kontakata za brisanje, vraceni ste na main menu.\n");
+        }
+
         static Contact AddNewContact(string nameAndSurname, string phoneNumber)
         {
             var newContact = new Contact();
