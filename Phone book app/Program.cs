@@ -338,6 +338,27 @@ namespace PhoneBookApp
                 PhoneBookSubmenu(ContactList);
         }
 
+        public static void WriteOutAllCalls(IDictionary<Contact, List<Calls>> ContactList)
+        {
+            Console.Clear();
+            var counter = 0;
+
+            if (ContactList.Values.Count is not 0)
+            {
+                var check = CheckForActiveCalls(ContactList);
+
+                foreach (var item in ContactList)
+                    if (item.Value is not null)
+                        foreach (var thing in item.Value)
+                        {
+                            Console.WriteLine(thing.ToString());
+                            counter++;
+                        }
+            }
+            else
+                Console.WriteLine("Nema zapisanih poziva trenutno!\n");
+        }
+
         static Contact AddNewContact(string nameAndSurname, string phoneNumber)
         {
             var newContact = new Contact();
