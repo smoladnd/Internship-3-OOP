@@ -175,5 +175,62 @@ namespace PhoneBookApp
             newContact.AddContact(nameAndSurname, phoneNumber);
             return newContact;
         }
+ 
+        private static bool CheckNameAndSurname(string nameAndSurname)
+        {
+            var check = true;
+            var countSpace = 0;
+
+            for (int i = 0; i < nameAndSurname.Length; i++)
+            {
+                if (nameAndSurname[i] >= 'a' && nameAndSurname[i] <= 'z' || nameAndSurname[i] == ' ' || nameAndSurname[i] >= 'A' && nameAndSurname[i] <= 'Z')
+                    check = true;
+                else
+                {
+                    check = false;
+                    Console.WriteLine("Molim vas pri upisu imena i prezime koristitie samo latinska slova!");
+                    break;
+                }
+            }
+
+            if (check is true)
+            {
+                for (int i = 0; i < nameAndSurname.Length; i++)
+                    if (nameAndSurname[i] == ' ')
+                        countSpace++;
+
+                if (countSpace is 0)
+                {
+                    check = false;
+                    Console.WriteLine("Molim vas kada pisete ime i prezime, pazite da stavite razmak izmedu svakog imena i prezimena.");
+                }
+            }
+
+            return check;
+        }
+
+        private static bool CheckPhoneNumber(string phoneNumber, IDictionary<Contact, List<Calls>> ContactList)
+        {
+            var check = true;
+
+            var isNumber = int.TryParse(phoneNumber, out _);
+            if (!isNumber && check)
+            {
+                Console.WriteLine("Mobilni broj vam se mora samo sastojati od brojeva! Pokusajte ponovno.");
+                return !check;
+            }
+
+            foreach (var item in ContactList)
+            {
+                if (item.Key.PhoneNumber == phoneNumber)
+                {
+                    Console.WriteLine("Mobilni broj vec postoji u listi kontakata! Pokusajte ponovno.");
+                    return !check;
+                }
+            }
+
+            return check;
+        }
+
     }
 }
