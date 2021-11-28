@@ -113,5 +113,14 @@ namespace PhoneBookApp
 
         }
 
+        private static void WriteOutContacts(IDictionary<Contact, List<Calls>> ContactList)
+        {
+            foreach (var item in ContactList)
+            {
+                Console.WriteLine(item.Key.ToString() +
+                    "\n");
+            }
+        }
+
     }
 }
