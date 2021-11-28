@@ -61,5 +61,57 @@ namespace PhoneBookApp
                     "---------------------------------------------------------------------");
         }
 
+        private static void MainMenuChoice(int menuChoice, IDictionary<Contact, List<Calls>> ContactList)
+        {
+            if (ContactList.Keys.Count is not 0)
+            {
+                switch (menuChoice)
+                {
+                    case 1:
+                        WriteOutContacts(ContactList);
+                        break;
+                    case 2:
+                        AddNewContact(ContactList);
+                        break;
+                    case 3:
+                        EraseContact(ContactList);
+                        break;
+                    case 4:
+                        EditingContactPreference(ContactList);
+                        break;
+                    case 5:
+                        PhoneBookSubmenu(ContactList);
+                        break;
+                    case 6:
+                        WriteOutAllCalls(ContactList);
+                        break;
+                    case 7:
+                        PhoneBookIsActive = !PhoneBookIsActive;
+                        break;
+                    default:
+                        Console.Clear();
+                        Console.WriteLine("Molim vas upisite jedan od ponudenih sedam brojeva!\n");
+                        break;
+                }
+            }
+            else
+            {
+                switch (menuChoice)
+                {
+                    case 1:
+                        AddNewContact(ContactList);
+                        break;
+                    case 2:
+                        PhoneBookIsActive = !PhoneBookIsActive;
+                        break;
+                    default:
+                        Console.Clear();
+                        Console.WriteLine("Molim vas upisite jedan od dva moguca broja!\n");
+                        break;
+                }
+            }
+
+        }
+
     }
 }
