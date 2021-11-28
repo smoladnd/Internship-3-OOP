@@ -415,6 +415,59 @@ namespace PhoneBookApp
             return check;
         }
 
+        public static void WriteOutCallsOfContactSorted(IDictionary<Contact, List<Calls>> ContactList)
+        {
+            var chosenPhoneNumber = "";
+            bool isNumber = false;
+            Console.Clear();
+
+            var check = CheckForActiveCalls(ContactList);
+
+            WriteOutContacts(ContactList);
+            Console.WriteLine("\nIspisite broj kontakta od ponudenih kojem zelite ispisat pozive:");
+
+            do
+            {
+                chosenPhoneNumber = Console.ReadLine();
+                isNumber = int.TryParse(chosenPhoneNumber, out _);
+
+                if (!isNumber)
+                    Console.WriteLine("Mobilni broj vam se mora samo sastojati od brojeva! Pokusajte ponovno.");
+                else
+                    break;
+            } while (true);
+
+            foreach (var item in ContactList)
+                if (item.Key.PhoneNumber == chosenPhoneNumber)
+                {
+                    if (item.Value.Count is 0)
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Nema zapisanih poziva na odabranom kontaktu!\n");
+                        PhoneBookSubmenu(ContactList);
+                    }
+                    else
+                    {
+                        var temporariCallsList = new List<Calls>();
+                        var tempCallDates = new List<DateTime>();
+
+                        foreach (var thing in item.Value)
+                        {
+                            temporariCallsList.Add(AddNewCall(thing.BeginningOfCall, thing.StatusOfCall, thing.CallDuration));
+                            tempCallDates.Add(thing.BeginningOfCall);
+                        }
+
+                        SortListDescending(tempCallDates);
+
+                        foreach (var firstItem in tempCallDates)
+                            foreach (var secondItem in temporariCallsList)
+                                if (firstItem == secondItem.BeginningOfCall)
+                                    Console.WriteLine(secondItem.ToString());
+                    }
+                }
+
+        }
+
         public static void MakeNewCall(IDictionary<Contact, List<Calls>> ContactList)
         {
             var chosenPhoneNumber = "";
@@ -514,5 +567,26 @@ namespace PhoneBookApp
             return check;
         }
 
+        public static void SortListDescending(List<DateTime> temporariCallDateList)
+        {
+            var throwawayList = new List<DateTime>();
+            var min = new DateTime(1, 1, 1, 0, 0, 0);
+
+            while (temporariCallDateList.Count is not 0)
+            {
+                foreach (var item in temporariCallDateList)
+                    if (item < min)
+                    {
+                        min = item;
+                        break;
+                    }
+                throwawayList.Add(min);
+                temporariCallDateList.Remove(min);
+            }
+
+            foreach (var item in throwawayList)
+                temporariCallDateList.Add(item);
+        }
     }
 }
+
