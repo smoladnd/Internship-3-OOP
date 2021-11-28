@@ -496,5 +496,23 @@ namespace PhoneBookApp
             }
         }
 
+        public static bool CheckForActiveCalls(IDictionary<Contact, List<Calls>> ContactList)
+        {
+            bool check = false;
+
+            foreach (var item in ContactList)
+                if (item.Value is not null)
+                    foreach (var thing in item.Value)
+                        if (thing.StatusOfCall == CallStatus.Traje)
+                        {
+                            if (thing.BeginningOfCall.AddSeconds(thing.CallDuration) < DateTime.Now)
+                                thing.StatusOfCall = CallStatus.Zavrsen;
+                            else
+                                return check = true;
+                        }
+
+            return check;
+        }
+
     }
 }
