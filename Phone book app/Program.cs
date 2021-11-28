@@ -7,6 +7,13 @@ namespace PhoneBookApp
 {
     class Program
     {
+        public static Random NumberGenerator = new Random();
+        public static int RandomCallConection => NumberGenerator.Next(2);
+        public static int RandomCallDuration => NumberGenerator.Next(1, 20);
+
+
+        public static bool PhoneBookIsActive = true;
+        public static IDictionary<Contact, List<Calls>> ContactList = new Dictionary<Contact, List<Calls>>();
 
         static void Main(string[] args)
         {
